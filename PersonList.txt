@@ -1,0 +1,3 @@
+2
+PersonName1 PersonSurname1 City1 +77777777777
+PersonName2 PersonSurname2 City2 +77777777778
