@@ -49,19 +49,19 @@ func main() {
 	log.Fatal(http.ListenAndServe(":8000", router))
 }
 
-// Get all books
+// Get all persons
 func GetPersons(w http.ResponseWriter, r *http.Request) {
 	db := setupDB()
 
 	printMessage("Getting persons...")
 
-	// Get all books from books table that don't have personID = "1"
+	// Get all person from persons table that don't have id = "1"
 	rows, err := db.Query("SELECT * FROM persons where id <> $1", "1")
 
 	checkErr(err)
 	var persons []Person
 	// var response []JsonResponse
-	// Foreach book
+	// Foreach person
 	for rows.Next() {
 		var id int
 		var name string
@@ -81,7 +81,7 @@ func GetPersons(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
-// Create a book
+// Create a person
 func CreatePerson(w http.ResponseWriter, r *http.Request) {
 	//name := r.FormValue("name")
 	//surname := r.FormValue("surname")
@@ -118,7 +118,7 @@ func CreatePerson(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
-// Delete a book
+// Delete a person
 func DeletePerson(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 
@@ -142,7 +142,7 @@ func DeletePerson(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
-// Delete all books
+// Delete all persons
 func DeletePersons(w http.ResponseWriter, r *http.Request) {
 	db := setupDB()
 
