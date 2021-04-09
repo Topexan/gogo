@@ -34,16 +34,16 @@ type JsonResponse struct {
 func main() {
 	router := mux.NewRouter()
 
-	// Get all books
+	// Get all persons
 	router.HandleFunc("/persons/", GetPersons).Methods("GET")
 
-	// Create a book
+	// Create a person
 	router.HandleFunc("/persons/", CreatePerson).Methods("POST")
 
-	// Delete a specific book by the bookID
+	// Delete a specific person by the personID
 	router.HandleFunc("/persons/{personid}", DeletePerson).Methods("DELETE")
 
-	// Delete all books
+	// Delete all persons
 	router.HandleFunc("/persons/", DeletePersons).Methods("DELETE")
 
 	log.Fatal(http.ListenAndServe(":8000", router))
@@ -122,21 +122,21 @@ func CreatePerson(w http.ResponseWriter, r *http.Request) {
 func DeletePerson(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 
-	bookID := params["bookid"]
+	personID := params["personid"]
 
 	var response = JsonResponse{}
 
-	if bookID == "" {
-		response = JsonResponse{Type: "error", Message: "You are missing bookID parameter."}
+	if personID == "" {
+		response = JsonResponse{Type: "error", Message: "You are missing personID parameter."}
 	} else {
 		db := setupDB()
 
-		printMessage("Deleting book from DB")
+		printMessage("Deleting person from DB")
 
-		_, err := db.Exec("DELETE FROM books where bookID = $1", bookID)
+		_, err := db.Exec("DELETE FROM persons where id = $1", personID)
 		checkErr(err)
 
-		response = JsonResponse{Type: "success", Message: "The book has been deleted successfully!"}
+		response = JsonResponse{Type: "success", Message: "The person has been deleted successfully!"}
 	}
 
 	json.NewEncoder(w).Encode(response)
@@ -146,14 +146,14 @@ func DeletePerson(w http.ResponseWriter, r *http.Request) {
 func DeletePersons(w http.ResponseWriter, r *http.Request) {
 	db := setupDB()
 
-	printMessage("Deleting all books...")
+	printMessage("Deleting all persons...")
 
-	_, err := db.Exec("DELETE FROM books")
+	_, err := db.Exec("DELETE FROM persons")
 	checkErr(err)
 
-	printMessage("All books have been deleted successfully!")
+	printMessage("All persons have been deleted successfully!")
 
-	var response = JsonResponse{Type: "success", Message: "All books have been deleted successfully!"}
+	var response = JsonResponse{Type: "success", Message: "All persons have been deleted successfully!"}
 
 	json.NewEncoder(w).Encode(response)
 }
