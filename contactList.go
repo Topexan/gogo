@@ -33,19 +33,81 @@ var persons []Person
 //function to show all persons
 func getPersons(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+	
+	db := setupDB()
+	defer db.Close()
+
+	err := db.Ping()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("Successfully connected!")
+
+	rows, err := db.Query("SELECT id, name, surname, city, phone FROM persons")
+	if err != nil {
+		// handle this error better than this
+		panic(err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var id string
+		var name string
+		var surname string
+		var city string
+		var phone string
+		err = rows.Scan(&id, &name, &surname, &city, &phone)
+		if err != nil {
+			// handle this error
+			panic(err)
+		}
+		persons = append(persons, Person{ID: id, Name: name, Surname: surname, City: city, Phone: phone})
+	}
+	// get any error encountered during iteration
+	err = rows.Err()
+	if err != nil {
+		panic(err)
+	}
+
 	json.NewEncoder(w).Encode(persons)
 }
 //function to show one person
 func getPerson(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	params := mux.Vars(r) //read parameter from url
-	for _, item := range persons {
-		if item.ID == params["id"] {
-			json.NewEncoder(w).Encode(item)
-			return
-		}
+	
+	db := setupDB()
+	defer db.Close()
+
+	sqlStatement := `
+		SELECT id, name, surname, city, phone FROM persons
+		WHERE id = $1;`
+	rows, err := db.Query(sqlStatement, params["id"])
+	if err != nil {
+		// handle this error better than this
+		panic(err)
 	}
-	json.NewEncoder(w).Encode(&Person{})
+	defer rows.Close()
+	var p Person
+	for rows.Next() {
+		var id string
+		var name string
+		var surname string
+		var city string
+		var phone string
+		err = rows.Scan(&id, &name, &surname, &city, &phone)
+		if err != nil {
+			// handle this error
+			panic(err)
+		}
+		p = Person{ID: id, Name: name, Surname: surname, City: city, Phone: phone}
+	}
+	err = rows.Err()
+	if err != nil {
+		panic(err)
+	}
+	
+	json.NewEncoder(w).Encode(p)
 }
 //function to create new person
 func createPerson(w http.ResponseWriter, r *http.Request) { 
@@ -62,7 +124,7 @@ func createPerson(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewDecoder(r.Body).Decode(&p)
 	
 	p.ID = strconv.Itoa(rand.Intn(30 - 4) + 4) // random number from 4 to 30
-	persons = append(persons, p) //adding new person to array
+	//persons = append(persons, p) //adding new person to array
 	json.NewEncoder(w).Encode(p) 
 
 	db := setupDB()
@@ -88,6 +150,7 @@ func updatePerson(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
+
 	for i := range persons {
 		if persons[i].ID == p.ID {
 			persons[i] = p //switch old person to new
@@ -137,7 +200,7 @@ func deletePerson(w http.ResponseWriter, r *http.Request) {
 }
 //function to take persons from database, and put persons to array
 func connectToDb() { 
-	db := setupDB()
+	/* db := setupDB()
 	defer db.Close()
 
 	err := db.Ping()
@@ -170,7 +233,7 @@ func connectToDb() {
 	err = rows.Err()
 	if err != nil {
 		panic(err)
-	}
+	} */
 }
 //function to connect to database
 func setupDB() *sql.DB{ 
