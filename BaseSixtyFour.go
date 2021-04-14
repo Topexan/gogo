@@ -8,21 +8,37 @@ import (
 func main() {
 	s := "Hello base64"
 
-	sEnc := b64.StdEncoding.EncodeToString([]byte(s))
+	sEnc := encodeStd(s)
 	fmt.Println(sEnc)
 
-	sDec, err := b64.StdEncoding.DecodeString(sEnc)
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println(string(sDec))
+	fmt.Println(decodeStd(sEnc))
 
-	uEnc := b64.URLEncoding.EncodeToString([]byte(s))
+	uEnc := encodeURL(s)
 	fmt.Println(uEnc)
-	
-	uDec, err := b64.URLEncoding.DecodeString(uEnc)
+
+	fmt.Println(decodeURL(uEnc))
+}
+
+func encodeStd(s string) string {
+	return b64.StdEncoding.EncodeToString([]byte(s))
+}
+
+func decodeStd(s string) string {
+	res, err := b64.StdEncoding.DecodeString(s)
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(string(uDec))
+	return string(res)
+}
+
+func encodeURL(s string) string {
+	return b64.URLEncoding.EncodeToString([]byte(s))
+}
+
+func decodeURL(s string) string {
+	res, err := b64.URLEncoding.DecodeString(s)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return string(res)
 }
