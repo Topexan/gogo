@@ -42,8 +42,6 @@ func getPersons(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	fmt.Println("Successfully connected!")
-
 	rows, err := db.Query("SELECT id, name, surname, city, phone FROM persons")
 	if err != nil {
 		// handle this error better than this
@@ -68,7 +66,7 @@ func getPersons(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-
+	log.Println("Get all persons from table: persons")
 	json.NewEncoder(w).Encode(persons)
 }
 
@@ -107,7 +105,7 @@ func getPerson(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-
+	log.Println("Get person from table: persons, with id:", params["id"])
 	json.NewEncoder(w).Encode(p)
 }
 
@@ -126,7 +124,6 @@ func createPerson(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewDecoder(r.Body).Decode(&p)
 
 	p.ID = strconv.Itoa(rand.Intn(30-4) + 4) // random number from 4 to 30
-	//persons = append(persons, p) //adding new person to array
 	json.NewEncoder(w).Encode(p)
 
 	db := setupDB()
@@ -139,7 +136,7 @@ func createPerson(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("insertion comleted")
+	log.Println("Insert new person to table: persons")
 }
 
 // function to update existing person
@@ -169,6 +166,7 @@ func updatePerson(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
+	log.Println("Update person from table: persons, with id:", p.ID)
 
 }
 
@@ -187,6 +185,7 @@ func deletePerson(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
+	log.Println("Delete person from table: persons, with id:", params["id"])
 	getPersons(w, r)
 }
 
@@ -198,8 +197,10 @@ func setupDB() *sql.DB {
 
 	db, err := sql.Open("postgres", psqlInfo)
 	if err != nil {
-		panic(err)
+		//panic(err)
+		log.Println(err)
 	}
+	log.Println("Succesful connetcion to ", dbname)
 	return db
 }
 
