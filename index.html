@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+        <title>Contact List</title>
+        <style>
+              h1 {
+                text-align: center;
+                margin: 0;
+            }
+            img {
+                width: 50vw;
+            }
+
+            form {
+                text-align: center;
+            }
+
+            textarea {
+                resize: none;
+                width: 40vw;
+                height: 5vw;
+                overflow: auto;
+            }
+
+            body {
+                height: 100%;
+                background-repeat: no-repeat;
+                background-position: center;
+                background-size: cover;
+                background-attachment: fixed;
+            }
+
+            pre {
+                border: 5px solid darkgrey;
+                height: 25vw;
+                width: 97vw;
+                background-color: whitesmoke;
+            }
+        </style>
+    </head>
+    <body>
+        <main>
+                <h1>
+                    Contact List
+                </h1>
+                <form>
+                    <p>
+                        <select name="fs" id="fs">
+                            <option value="listPersons">
+                                List persons
+                            </option>
+                        </select>
+                        <button class="btn" type="submit">
+                            submit
+                        </button>
+                    </p>
+                </form>
+                <pre id="body" class="body">{{printf .Output}}</pre>
+        </main>
+    </body>
+</html>
